@@ -1,0 +1,18 @@
+# add dependencies which are required to set up the environment of GitHub Action runner
+
+# Pipeline orchestration dependencies
+boto3
+sagemaker
+mlflow
+
+# Testing dependencies
+pytest
+httpx
+fastapi
+
+# Core Data/ML dependencies (needed because pytest imports train.py and predict.py)
+numpy
+pandas
+matplotlib
+joblib
+scikit-learn

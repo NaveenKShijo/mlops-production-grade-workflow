@@ -1,0 +1,10 @@
+# training container dependencies
+
+numpy 
+pandas
+matplotlib
+joblib
+scikit-learn
+mlflow
+dvc[s3]
+boto3

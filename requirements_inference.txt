@@ -1,0 +1,8 @@
+# inference container dependencies
+
+numpy
+pandas
+joblib
+scikit-learn
+fastapi
+uvicorn

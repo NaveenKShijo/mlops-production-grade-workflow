@@ -1,0 +1,29 @@
+from fastapi import FastAPI, Request 
+from fastapi.responses import JSONResponse
+import pandas
+from predict import predict, load_artifacts
+import os
+
+
+app = FastAPI()
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+model_dir = os.getenv("SM_MODEL_DIR", os.path.join(BASE_DIR, "models"))
+
+model, scaler = load_artifacts(model_dir)
+
+@app.get("/home")
+def get_home():
+    return {'response':'This is home'}
+
+@app.get("/ping")    
+def ping():
+    """ Sagemaker health check """
+    return JSONResponse(status_code = 200, content = {"status": "Healthy"})
+
+@app.post("/invocations")
+async def invocations(request: Request):
+    """Sagemaker prediction endpoint"""
+    body = await request.json()
+    input_df = pd.DataFrame([body])
+    result = predict(model, scaler, input_df)

@@ -1,0 +1,60 @@
+# Triggered manually from Github Actions UI after human approves the model in MLflow UI
+
+name: CD - Deploy approved model to the sagemaker
+
+on: 
+  workflow_dispatch:
+    inputs: 
+      image_tag:  # 'image_tag' is one input. You can name any input
+        description: "Inference image tag to be deployed"
+        required: True
+
+jobs:
+  
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt 
+
+      # - name: run tests
+      #   run: pytest
+
+      - name: Login to Dockerhub
+        uses: docker/login-action@v3
+        with:
+          username: ${{secrets.DOCKER_USERNAME}}
+          password: ${{secrets.DOCKER_PASSWORD}}
+      
+      - name: Build docker image
+        run: docker build -f docker/inference/Dockerfile -t ${{secrets.DOCKER_USERNAME}}/ml-inference:${{github.event.inputs.image_tag}} .
+
+      - name: Upload the image to Dockerhub
+        run: docker push ${{secrets.DOCKER_USERNAME}}/ml-inference:${{github.event.inputs.image_tag}}
+
+      # Deploy: reads approved model from Registry -> finds model.tar.gz -> creates or updates endpoint
+      - name: Deploy production model to Sagemaker endpoint
+        env:  
+          MLFLOW_URI: ${{ vars.MLFLOW_URI }}
+          DOCKER_USERNAME: ${{ vars.DOCKER_USERNAME }}
+          IMAGE_TAG: ${{ github.event.inputs.image_tag }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}          
+          S3_OUTPUT_BUCKET: ${{ vars.S3_OUTPUT_BUCKET}}  #"naveen-sagemakeroutput"
+          SAGEMAKER_ROLE: ${{ vars.SAGEMAKER_ROLE_ARN }}  # arn:aws:iam::565265042094:role/MLOps-role
+          SAGEMAKER_ENDPOINT: ${{ vars.}}
+      
+        run: python src/pipeline/deploy.py
+
+          
+      
+

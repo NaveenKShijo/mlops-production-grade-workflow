@@ -1,0 +1,6 @@
+[core]
+    remote = s3bucket
+['remote "localremote"']
+    url = C:\Users\Naveen\Desktop\DataScience\Week41\dvc-storage
+['remote "s3bucket"']
+    url = s3://cicd-dvc-remotestorage
