@@ -11,7 +11,7 @@ git_commmit_sha = os.getenv("GIT_COMMIT_SHA")
 github_repo = os.getenv("GITHUB_REPO")
 
 # SageMaker configuration details
-sagemaker_role = os.getenv("SAGEMAKER_ROLE", "arn:aws:iam::565265042094:role/MLOps-role")
+sagemaker_role = os.getenv("SAGEMAKER_ROLE_ARN", "arn:aws:iam::565265042094:role/MLOps-role")
 sagemaker_instance_type = os.getenv("SAGEMAKER_INSTANCE_TYPE", "ml.t3.medium")
 sagemaker_output_path = os.getenv("SAGEMAKER_OUTPUT_PATH", "s3://naveen-sagemakeroutput/training-output/")
 

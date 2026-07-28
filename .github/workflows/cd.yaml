@@ -31,14 +31,14 @@ jobs:
       - name: Login to Dockerhub
         uses: docker/login-action@v3
         with:
-          username: ${{secrets.DOCKER_USERNAME}}
+          username: ${{vars.DOCKER_USERNAME}}
           password: ${{secrets.DOCKER_PASSWORD}}
       
       - name: Build docker image
-        run: docker build -f docker/inference/Dockerfile -t ${{secrets.DOCKER_USERNAME}}/ml-inference:${{github.event.inputs.image_tag}} .
+        run: docker build -f docker/inference/Dockerfile -t ${{vars.DOCKER_USERNAME}}/ml-inference:${{github.event.inputs.image_tag}} .
 
       - name: Upload the image to Dockerhub
-        run: docker push ${{secrets.DOCKER_USERNAME}}/ml-inference:${{github.event.inputs.image_tag}}
+        run: docker push ${{vars.DOCKER_USERNAME}}/ml-inference:${{github.event.inputs.image_tag}}
 
       # Deploy: reads approved model from Registry -> finds model.tar.gz -> creates or updates endpoint
       - name: Deploy production model to Sagemaker endpoint
@@ -49,9 +49,9 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}          
-          S3_OUTPUT_BUCKET: ${{ vars.S3_OUTPUT_BUCKET}}  #"naveen-sagemakeroutput"
-          SAGEMAKER_ROLE: ${{ vars.SAGEMAKER_ROLE_ARN }}  # arn:aws:iam::565265042094:role/MLOps-role
-          SAGEMAKER_ENDPOINT: ${{ vars.SAGEMAKER_ENDPOINT}}  # "insurance-charges-endpoint
+          S3_OUTPUT_BUCKET: ${{ vars.S3_OUTPUT_BUCKET}}  
+          SAGEMAKER_ROLE: ${{ vars.SAGEMAKER_ROLE_ARN }}  
+          SAGEMAKER_ENDPOINT: ${{ vars.SAGEMAKER_ENDPOINT}}  
       
         run: python src/pipeline/deploy.py
 
