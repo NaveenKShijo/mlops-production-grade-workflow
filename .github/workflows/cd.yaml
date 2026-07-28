@@ -51,7 +51,7 @@ jobs:
           AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}          
           S3_OUTPUT_BUCKET: ${{ vars.S3_OUTPUT_BUCKET}}  #"naveen-sagemakeroutput"
           SAGEMAKER_ROLE: ${{ vars.SAGEMAKER_ROLE_ARN }}  # arn:aws:iam::565265042094:role/MLOps-role
-          SAGEMAKER_ENDPOINT: ${{ vars.}}
+          SAGEMAKER_ENDPOINT: ${{ vars.SAGEMAKER_ENDPOINT}}  # "insurance-charges-endpoint
       
         run: python src/pipeline/deploy.py
 

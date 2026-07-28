@@ -27,7 +27,7 @@ IMAGE_TAG          = os.environ["IMAGE_TAG"]           # git sha of the inferenc
 AWS_REGION         = os.environ.get("AWS_DEFAULT_REGION", "us-north-1")
 SAGEMAKER_ROLE_ARN = os.environ.get("SAGEMAKER_ROLE", "arn:aws:iam::565265042094:role/MLOps-role")
 S3_OUTPUT_BUCKET   = os.getenv("S3_OUTPUT_BUCKET")  
-ENDPOINT_NAME      = os.getenv("SAGEMAKER_ENDPOINT") #"insurance-charges-endpoint"
+ENDPOINT_NAME      = os.getenv("SAGEMAKER_ENDPOINT") 
 REGISTERED_MODEL   = "InsuranceChargesModel"   # specified in train.py 
 
 # ── Step 1: Connect to MLflow and query the Registry ────────────────────────────
