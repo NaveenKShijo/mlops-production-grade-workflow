@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Request 
 from fastapi.responses import JSONResponse
-import pandas
+import pandas as pd
 from predict import predict, load_artifacts
 import os
 
@@ -27,3 +27,4 @@ async def invocations(request: Request):
     body = await request.json()
     input_df = pd.DataFrame([body])
     result = predict(model, scaler, input_df)
+    return JSONResponse(content = {"Prediction": result}, status_code = 200)
