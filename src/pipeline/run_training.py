@@ -4,21 +4,21 @@ import boto3
 from sagemaker.estimator import Estimator 
 import os, time
 
-docker_username = os.getenv("DOCKER_USERNAME")
-image_tag = os.getenv("IMAGE_TAG")
+
+image_uri = os.getenv("IMAGE_URI")
 mlflow_uri = os.getenv("MLFLOW_URI")
 git_commmit_sha = os.getenv("GIT_COMMIT_SHA")
 github_repo = os.getenv("GITHUB_REPO")
 
 # SageMaker configuration details
 sagemaker_role = os.getenv("SAGEMAKER_ROLE_ARN", "arn:aws:iam::565265042094:role/MLOps-role")
-sagemaker_instance_type = os.getenv("SAGEMAKER_INSTANCE_TYPE", "ml.t3.medium")
+sagemaker_instance_type = os.getenv("SAGEMAKER_INSTANCE_TYPE", "ml.t3.medium") # ml.m5.large
 sagemaker_output_path = os.getenv("SAGEMAKER_OUTPUT_PATH", "s3://naveen-sagemakeroutput/training-output/")
 
 job_name = f"insurance-training-{int(time.time())}"
 
 estimator = Estimator(    
-    image_uri = f"{docker_username}/ml_train:{image_tag}",
+    image_uri = image_uri,
     role = sagemaker_role, # role ARN
     instance_count = 1, # train using 1 EC2 instance, specify more for distributed training
     instance_type = sagemaker_instance_type,  # ml.m5.large for larger workloads

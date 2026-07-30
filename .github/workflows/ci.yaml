@@ -21,27 +21,46 @@ jobs:
       # - name: run test
       #   run: pytest
 
-      - name: loginto dockerhub
-        uses: docker/login-action@v3
-        with:
-          username: ${{vars.DOCKER_USERNAME}}
-          password: ${{secrets.DOCKER_PASSWORD}}          
+      # - name: loginto dockerhub
+      #   uses: docker/login-action@v3
+      #   with:
+      #     username: ${{vars.DOCKER_USERNAME}}
+      #     password: ${{secrets.DOCKER_PASSWORD}}          
       
-      - name: build docker image to train ML model 
-        run: docker build -f docker/training/Dockerfile -t ${{vars.DOCKER_USERNAME}}/ml_train:${{github.sha}} .
+      # - name: build docker image to train ML model 
+      #   run: docker build -f docker/training/Dockerfile -t ${{vars.DOCKER_USERNAME}}/ml_train:${{github.sha}} .
 
-      - name: push docker image to dockerhub
-        run: docker push ${{vars.DOCKER_USERNAME}}/ml_train:${{github.sha}}
+      # - name: push docker image to dockerhub
+      #   run: docker push ${{vars.DOCKER_USERNAME}}/ml_train:${{github.sha}}
       
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4 
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+      
+      - name: Login to AWS ECR
+        id: login-ecr 
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push images
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: production/mlops
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
       
       - name: Submit sagemaker training jobs
         env: 
           GIT_COMMIT_SHA: ${{github.sha}}    
           GITHUB_REPO: ${{vars.REPO_NAME}} 
           # GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}  # For private repositories
-          IMAGE_TAG: ${{github.sha}}
-          MLFLOW_URI: ${{vars.MLFLOW_URI}}
-          DOCKER_USERNAME: ${{vars.DOCKER_USERNAME}}
+          IMAGE_URI: ${{ steps.login-ecr.outputs.registry }}/production/mlops:${{ github.sha }}
+          MLFLOW_URI: ${{vars.MLFLOW_URI}}          
           AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}           # boto3 reads this automatically
           AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}   # boto3 reads this automatically
           AWS_DEFAULT_REGION: ${{vars.AWS_DEFAULT_REGION}}         # boto3 reads this automatically

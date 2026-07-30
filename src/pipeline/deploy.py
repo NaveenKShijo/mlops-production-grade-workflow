@@ -22,8 +22,7 @@ from sagemaker.model import Model
 
 # ── Config from environment variables (set in GitHub Actions secrets / cd.yaml) ─
 MLFLOW_URI         = os.environ["MLFLOW_URI"]
-DOCKER_USERNAME    = os.environ["DOCKER_USERNAME"]
-IMAGE_TAG          = os.environ["IMAGE_TAG"]           # git sha of the inference image
+IMAGE_URI          = os.environ["IMAGE_URI"]           
 AWS_REGION         = os.environ.get("AWS_DEFAULT_REGION", "us-north-1")
 SAGEMAKER_ROLE_ARN = os.environ.get("SAGEMAKER_ROLE", "arn:aws:iam::565265042094:role/MLOps-role")
 S3_OUTPUT_BUCKET   = os.getenv("S3_OUTPUT_BUCKET")  
@@ -69,7 +68,7 @@ print(f"model.tar.gz location: {model_data_uri}")
 # ── Step 4: Deploy or update the SageMaker Endpoint ─────────────────────────────
 # The inference image has the FastAPI code baked in.
 # SageMaker will extract model.tar.gz → /opt/ml/model/ before the container starts.
-inference_image_uri = f"{DOCKER_USERNAME}/ml-inference:{IMAGE_TAG}"
+inference_image_uri = IMAGE_URI
 print(f"Inference image: {inference_image_uri}")
 
 sm_model = Model(

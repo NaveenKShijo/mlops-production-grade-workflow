@@ -30,24 +30,43 @@ jobs:
       # - name: run tests
       #   run: pytest
 
-      - name: Login to Dockerhub
-        uses: docker/login-action@v3
-        with:
-          username: ${{vars.DOCKER_USERNAME}}
-          password: ${{secrets.DOCKER_PASSWORD}}
+      # - name: Login to Dockerhub
+      #   uses: docker/login-action@v3
+      #   with:
+      #     username: ${{vars.DOCKER_USERNAME}}
+      #     password: ${{secrets.DOCKER_PASSWORD}}
       
-      - name: Build docker image
-        run: docker build -f docker/inference/Dockerfile -t ${{vars.DOCKER_USERNAME}}/ml-inference:${{github.event.inputs.image_tag}} .
+      # - name: Build docker image
+      #   run: docker build -f docker/inference/Dockerfile -t ${{vars.DOCKER_USERNAME}}/ml-inference:${{github.event.inputs.image_tag}} .
 
-      - name: Upload the image to Dockerhub
-        run: docker push ${{vars.DOCKER_USERNAME}}/ml-inference:${{github.event.inputs.image_tag}}
+      # - name: Upload the image to Dockerhub
+      #   run: docker push ${{vars.DOCKER_USERNAME}}/ml-inference:${{github.event.inputs.image_tag}}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4 
+        with: 
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID}}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+        
+      - name: Login into AWS ECR 
+        id: login-ecr 
+        uses: aws-actions/amazon-ecr-login@v2 
+
+      - name: Build & push images 
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: production/mlops-inference 
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
       # Deploy: reads approved model from Registry -> finds model.tar.gz -> creates or updates endpoint
       - name: Deploy production model to Sagemaker endpoint
         env:  
-          MLFLOW_URI: ${{ vars.MLFLOW_URI }}
-          DOCKER_USERNAME: ${{ vars.DOCKER_USERNAME }}
-          IMAGE_TAG: ${{ github.event.inputs.image_tag }}
+          MLFLOW_URI: ${{ vars.MLFLOW_URI }}          
+          IMAGE_URI: ${{ steps.login-ecr.outputs.registry }}/production/mlops-inference:${{ github.sha }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}          
