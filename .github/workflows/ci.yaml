@@ -61,9 +61,10 @@ jobs:
           # GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}  # For private repositories
           IMAGE_URI: ${{ steps.login-ecr.outputs.registry }}/production/mlops:${{ github.sha }}
           MLFLOW_URI: ${{vars.MLFLOW_URI}}          
-          AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}           # boto3 reads this automatically
-          AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}   # boto3 reads this automatically
-          AWS_DEFAULT_REGION: ${{vars.AWS_DEFAULT_REGION}}         # boto3 reads this automatically
+          # not needed as AWS credentials are already configured above before creating and pushing images
+          # AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}           # boto3 reads this automatically
+          # AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}   # boto3 reads this automatically
+          # AWS_DEFAULT_REGION: ${{vars.AWS_DEFAULT_REGION}}         # boto3 reads this automatically
           SAGEMAKER_ROLE: ${{vars.SAGEMAKER_ROLE_ARN}}
           SAGEMAKER_INSTANCE_TYPE: ${{vars.SAGEMAKER_INSTANCE_TYPE}}
           SAGEMAKER_OUTPUT_PATH: ${{vars.SAGEMAKER_OUTPUT_PATH}}

@@ -67,15 +67,12 @@ jobs:
         env:  
           MLFLOW_URI: ${{ vars.MLFLOW_URI }}          
           IMAGE_URI: ${{ steps.login-ecr.outputs.registry }}/production/mlops-inference:${{ github.sha }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}          
+          # Not needed as they are already configured
+          # AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          # AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          # AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}          
           S3_OUTPUT_BUCKET: ${{ vars.S3_OUTPUT_BUCKET}}  
           SAGEMAKER_ROLE: ${{ vars.SAGEMAKER_ROLE_ARN }}  
           SAGEMAKER_ENDPOINT: ${{ vars.SAGEMAKER_ENDPOINT}}  
       
-        run: python src/pipeline/deploy.py
-
-          
-      
-
+        run: python src/pipeline/deploy.py              
