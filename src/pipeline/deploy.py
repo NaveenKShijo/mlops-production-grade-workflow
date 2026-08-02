@@ -22,7 +22,7 @@ import sagemaker
 from sagemaker.model import Model
 
 # ── Config from environment variables (set in GitHub Actions secrets / cd.yaml) ─
-MLFLOW_URI         = os.environ["MLFLOW_URI"]
+MLFLOW_REGISTRY_URI = os.environ["MLFLOW_REGISTRY_URI"]
 IMAGE_URI          = os.environ["IMAGE_URI"]           
 AWS_REGION         = os.environ.get("AWS_DEFAULT_REGION", "eu-north-1")
 SAGEMAKER_ROLE_ARN = os.environ.get("SAGEMAKER_ROLE", "arn:aws:iam::565265042094:role/MLOps-role")
@@ -32,7 +32,7 @@ MODEL_ALIAS = "champ-production"  # simply custom name
 REGISTERED_MODEL   = "InsuranceChargesModel"   # specified in train.py 
 
 # ── Step 1: Connect to MLflow and query the Registry ────────────────────────────
-mlflow.set_tracking_uri(MLFLOW_URI)
+mlflow.set_tracking_uri(MLFLOW_REGISTRY_URI)
 client = MlflowClient()
 
 print(f"Querying MLflow Registry for Production version of '{REGISTERED_MODEL}'...")
