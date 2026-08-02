@@ -1,3 +1,9 @@
+NOTE:
+* naveen-mlflow-artifacts2026 is not specified anywhere here, but it is the bucket where artifacts(scaler.pkl) will be stored. You passed it via MLflow server creation in SageMaker.
+
+
+FUTURE IMPROVEMENTS:
+
 * Inference app/test disagree — main.py:30 returns {"Prediction": [...]}, but test_inference.py:40-43 asserts the response is a bare list. Test fails if enabled.
 
 * Private repo clone would fail — entrypoint.sh:10 uses a tokenless public clone URL; GITHUB_TOKEN is commented out in ci.yaml:61 and never forwarded in run_training.py's environment. Works only if repo is public.

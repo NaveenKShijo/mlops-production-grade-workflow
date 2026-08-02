@@ -101,8 +101,10 @@ def main():
     mlflow_uri = os.getenv("MLFLOW_URI")
     mlflow.set_tracking_uri(mlflow_uri)
 
-    mlflow.set_experiment("Insurance charges prediction")
-    # To create or use a workspace for logging experiment details
+    mlflow.set_experiment("Insurance charges prediction 2")
+    # To create or use an existing workspace for logging experiment details.
+    # Each experiment has artifact storage to store the artifacts. It is set during the creation of experiment and cannot be changed
+
     with mlflow.start_run():
         df = load_data(data_path)
 
