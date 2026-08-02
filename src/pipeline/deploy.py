@@ -17,7 +17,7 @@ import os
 import boto3
 import mlflow
 from mlflow.tracking import MlflowClient
-from mlflow.exception import MlflowException
+from mlflow.exceptions import MlflowException
 import sagemaker
 from sagemaker.model import Model
 
