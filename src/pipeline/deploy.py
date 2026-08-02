@@ -42,8 +42,7 @@ try:
     prod_model = client.get_model_version_by_alias(REGISTERED_MODEL, MODEL_ALIAS)
 except MlflowException as e:
     print(e.message)
-    print(f"No model found with the alias = {MODEL_ALIAS}. Skipping deployment")
-    print(f"Go to MLflow UI → Model Registry → your version → Aliases → add '{MODEL_ALIAS}' first.")
+    print(f"Skipping deployment, due to the exception")    
     exit(1)
 
 run_id       = prod_model.run_id
@@ -71,7 +70,7 @@ print(f"Linked SageMaker training job: {sagemaker_job_name}")
 # ── Step 3: Derive the model.tar.gz S3 URI ───────────────────────────────────────
 # SageMaker always stores output at: s3://<output_path>/<job_name>/output/model.tar.gz
 model_data_uri = (    
-    f"{sagemaker_output_path}/{sagemaker_job_name}/output/model.tar.gz"
+    f"{sagemaker_output_path}{sagemaker_job_name}/output/model.tar.gz"
 )
 print(f"model.tar.gz location: {model_data_uri}")
 
