@@ -22,7 +22,7 @@ import sagemaker
 from sagemaker.model import Model
 
 # ── Config from environment variables (set in GitHub Actions secrets / cd.yaml) ─
-MLFLOW_REGISTRY_URI = os.environ["MLFLOW_REGISTRY_URI"]
+MLFLOW_URI = os.environ["MLFLOW_URI"]
 IMAGE_URI          = os.environ["IMAGE_URI"]           
 AWS_REGION         = os.environ.get("AWS_DEFAULT_REGION", "eu-north-1")
 SAGEMAKER_ROLE_ARN = os.environ.get("SAGEMAKER_ROLE", "arn:aws:iam::565265042094:role/MLOps-role")
@@ -32,16 +32,17 @@ MODEL_ALIAS = "champ-production"  # simply custom name
 REGISTERED_MODEL   = "InsuranceChargesModel"   # specified in train.py 
 
 # ── Step 1: Connect to MLflow and query the Registry ────────────────────────────
-mlflow.set_tracking_uri(MLFLOW_REGISTRY_URI)
+mlflow.set_tracking_uri(MLFLOW_URI)
 client = MlflowClient()
 
 print(f"Querying MLflow Registry for Production version of '{REGISTERED_MODEL}'...")
 
 try:
     prod_model = client.get_model_version_by_alias(REGISTERED_MODEL, MODEL_ALIAS)
-except MlflowException:
+except MlflowException as e:
+    print(e.message)
     print(f"No model found with the alias = {MODEL_ALIAS}. Skipping deployment")
-    print("Go to MLflow UI → Model Registry → your version → Aliases → add 'production' first.")
+    print(f"Go to MLflow UI → Model Registry → your version → Aliases → add '{MODEL_ALIAS}' first.")
     exit(1)
 
 run_id       = prod_model.run_id
