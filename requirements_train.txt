@@ -5,7 +5,7 @@ pandas
 matplotlib
 joblib
 scikit-learn
-mlflow
+mlflow>=2.9.0
 sagemaker_mlflow
 dvc[s3]
 boto3

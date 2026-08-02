@@ -6,7 +6,7 @@ Run by CI/CD after a human approves the model in the MLflow UI:
     python src/pipeline/deploy.py
 
 Flow:
-    1. Connect to MLflow Registry → find the "Production" version of InsuranceChargesModel
+    1. Connect to MLflow Registry → find the version of InsuranceChargesModel with alias 'champ-production'
     2. Get its run_id → read the sagemaker_job_name param logged during training
     3. Derive the model.tar.gz S3 URI from sagemaker_job_name
        (SageMaker always stores output at: s3://<bucket>/training-output/<job_name>/output/model.tar.gz)
@@ -17,6 +17,7 @@ import os
 import boto3
 import mlflow
 from mlflow.tracking import MlflowClient
+from mlflow.exception import MlflowException
 import sagemaker
 from sagemaker.model import Model
 
@@ -27,6 +28,7 @@ AWS_REGION         = os.environ.get("AWS_DEFAULT_REGION", "eu-north-1")
 SAGEMAKER_ROLE_ARN = os.environ.get("SAGEMAKER_ROLE", "arn:aws:iam::565265042094:role/MLOps-role")
 sagemaker_output_path = os.getenv("SAGEMAKER_OUTPUT_PATH")
 ENDPOINT_NAME      = os.getenv("SAGEMAKER_ENDPOINT") 
+MODEL_ALIAS = "champ-production"  # simply custom name
 REGISTERED_MODEL   = "InsuranceChargesModel"   # specified in train.py 
 
 # ── Step 1: Connect to MLflow and query the Registry ────────────────────────────
@@ -34,16 +36,16 @@ mlflow.set_tracking_uri(MLFLOW_URI)
 client = MlflowClient()
 
 print(f"Querying MLflow Registry for Production version of '{REGISTERED_MODEL}'...")
-prod_versions = client.get_latest_versions(REGISTERED_MODEL, stages=["Production"])
 
-if not prod_versions:
-    print("No model found in 'Production' stage. Skipping deployment.")
-    print("Go to MLflow UI → Model Registry → transition a version to 'Production' first.")
-    exit(0)
+try:
+    prod_model = client.get_model_version_by_alias(REGISTERED_MODEL, MODEL_ALIAS)
+except MlflowException:
+    print(f"No model found with the alias = {MODEL_ALIAS}. Skipping deployment")
+    print("Go to MLflow UI → Model Registry → your version → Aliases → add 'production' first.")
+    exit(1)
 
-prod_version = prod_versions[0]
-run_id       = prod_version.run_id
-version_num  = prod_version.version
+run_id       = prod_model.run_id
+version_num  = prod_model.version
 print(f"Found: {REGISTERED_MODEL} v{version_num}  (run_id={run_id})")
 
 # ── Step 2: Get the SageMaker training job name from that MLflow run ─────────────

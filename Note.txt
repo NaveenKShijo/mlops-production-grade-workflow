@@ -2,6 +2,21 @@ NOTE:
 * naveen-mlflow-artifacts2026 is not specified anywhere here, but it is the bucket where artifacts(scaler.pkl) will be stored. You passed it via MLflow server creation in SageMaker.
 
 
+Inline policy(JSON) to give access to AmazonSageMaker-ExecutionRole-20260726T132293 the permission for mlflow ui:
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "sagemaker-mlflow:AccessUI",
+                "sagemaker-mlflow:*"
+            ],
+            "Resource": "arn:aws:sagemaker:eu-north-1:565265042094:mlflow-tracking-server/my-mlflow-server"
+        }
+    ]
+}
+
 FUTURE IMPROVEMENTS:
 
 * Inference app/test disagree — main.py:30 returns {"Prediction": [...]}, but test_inference.py:40-43 asserts the response is a bare list. Test fails if enabled.
