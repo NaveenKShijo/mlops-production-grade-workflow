@@ -19,6 +19,8 @@ Inline policy(JSON) to give access to AmazonSageMaker-ExecutionRole-20260726T132
 
 FUTURE IMPROVEMENTS:
 
+* Move run_training.py from sagemaker v2(deprecated) to v3
+
 * Inference app/test disagree — main.py:30 returns {"Prediction": [...]}, but test_inference.py:40-43 asserts the response is a bare list. Test fails if enabled.
 
 * Private repo clone would fail — entrypoint.sh:10 uses a tokenless public clone URL; GITHUB_TOKEN is commented out in ci.yaml:61 and never forwarded in run_training.py's environment. Works only if repo is public.

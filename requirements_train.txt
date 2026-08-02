@@ -6,6 +6,6 @@ matplotlib
 joblib
 scikit-learn
 mlflow>=2.9.0
-sagemaker_mlflow
+sagemaker_mlflow  # required when we use mlflow server in sagemaker
 dvc[s3]
 boto3

@@ -4,6 +4,7 @@
 boto3
 sagemaker>=2.232.0,<3
 mlflow>=2.9.0
+sagemaker_mlflow  # required when we use mlflow server in sagemaker
 
 # Testing dependencies
 pytest
