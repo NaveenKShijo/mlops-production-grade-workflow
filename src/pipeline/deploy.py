@@ -23,9 +23,9 @@ from sagemaker.model import Model
 # ── Config from environment variables (set in GitHub Actions secrets / cd.yaml) ─
 MLFLOW_URI         = os.environ["MLFLOW_URI"]
 IMAGE_URI          = os.environ["IMAGE_URI"]           
-AWS_REGION         = os.environ.get("AWS_DEFAULT_REGION", "us-north-1")
+AWS_REGION         = os.environ.get("AWS_DEFAULT_REGION", "eu-north-1")
 SAGEMAKER_ROLE_ARN = os.environ.get("SAGEMAKER_ROLE", "arn:aws:iam::565265042094:role/MLOps-role")
-S3_OUTPUT_BUCKET   = os.getenv("S3_OUTPUT_BUCKET")  
+sagemaker_output_path = os.getenv("SAGEMAKER_OUTPUT_PATH")
 ENDPOINT_NAME      = os.getenv("SAGEMAKER_ENDPOINT") 
 REGISTERED_MODEL   = "InsuranceChargesModel"   # specified in train.py 
 
@@ -58,10 +58,16 @@ if not sagemaker_job_name or sagemaker_job_name == "local-run":
     )
 print(f"Linked SageMaker training job: {sagemaker_job_name}")
 
+
+
+# Here our goal is to obtain the .tar.gz file corresponding to the model that is pushed to production in mlflow registry. 
+# For that, we first find the job_name of that selected model. Then we easily track .tar.gz using the job_name, as the sagemaker normally save the .tar.gz package along with job_name by default. 
+
+
 # ── Step 3: Derive the model.tar.gz S3 URI ───────────────────────────────────────
 # SageMaker always stores output at: s3://<output_path>/<job_name>/output/model.tar.gz
-model_data_uri = (
-    f"s3://{S3_OUTPUT_BUCKET}/training-output/{sagemaker_job_name}/output/model.tar.gz"
+model_data_uri = (    
+    f"{sagemaker_output_path}/{sagemaker_job_name}/output/model.tar.gz"
 )
 print(f"model.tar.gz location: {model_data_uri}")
 

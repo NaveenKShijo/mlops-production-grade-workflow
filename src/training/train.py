@@ -106,7 +106,7 @@ def main():
     with mlflow.start_run():
         df = load_data(data_path)
 
-        sagemaker_job_name = os.getenv("TRAINING_JOB_RUN", "local-run")
+        sagemaker_job_name = os.getenv("TRAINING_JOB_NAME", "local-run")
         mlflow.log_param("sagemaker_job_name", sagemaker_job_name)
         # Log git commit hash
         commit_hash = subprocess.check_output(["git", "rev-parse", "HEAD"]).decode().strip()

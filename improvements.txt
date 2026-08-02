@@ -1,0 +1,7 @@
+* Inference app/test disagree — main.py:30 returns {"Prediction": [...]}, but test_inference.py:40-43 asserts the response is a bare list. Test fails if enabled.
+
+* Private repo clone would fail — entrypoint.sh:10 uses a tokenless public clone URL; GITHUB_TOKEN is commented out in ci.yaml:61 and never forwarded in run_training.py's environment. Works only if repo is public.
+
+* run_training.py:16 SAGEMAKER_OUTPUT_PATH has no default → if CI forgets it, the SDK silently uses a default bucket and deploy.py's path breaks.
+
+* tests + pytest steps are commented out in both workflows  

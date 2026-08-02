@@ -11,11 +11,15 @@ git_commmit_sha = os.getenv("GIT_COMMIT_SHA")
 github_repo = os.getenv("GITHUB_REPO")
 
 # SageMaker configuration details
-sagemaker_role = os.getenv("SAGEMAKER_ROLE_ARN", "arn:aws:iam::565265042094:role/MLOps-role")
+sagemaker_role = os.getenv("SAGEMAKER_ROLE")
 sagemaker_instance_type = os.getenv("SAGEMAKER_INSTANCE_TYPE", "ml.t3.medium") # ml.m5.large
-sagemaker_output_path = os.getenv("SAGEMAKER_OUTPUT_PATH", "s3://naveen-sagemakeroutput/training-output/")
+sagemaker_output_path = os.getenv("SAGEMAKER_OUTPUT_PATH")
 
-job_name = f"insurance-training-{int(time.time())}"
+# All these env variables will be forwarded to the sagemaker container running train.py 
+
+
+
+job_name = f"insurance-training"
 
 estimator = Estimator(    
     image_uri = image_uri,
@@ -23,7 +27,7 @@ estimator = Estimator(
     instance_count = 1, # train using 1 EC2 instance, specify more for distributed training
     instance_type = sagemaker_instance_type,  # ml.m5.large for larger workloads
     output_path = sagemaker_output_path,
-    base_job_name = job_name, # tells Sagemaker what to name this training run. Sagemaker will append base_job_name to the output path
+    base_job_name = job_name, # base_job_name is a prefix. SageMaker appends a unique suffix to create the real TrainingJobName (eg: insurance-training-1754-2026-08-01-14-23-45-511).
     
     
     # SageMaker injects these env variables into the running container for training
@@ -32,7 +36,8 @@ estimator = Estimator(
         "GITHUB_REPO": github_repo,
         "MLFLOW_URI": mlflow_uri,
         # Instead of hardcoding the MLflow server URL, you pass it from sagemaker. Thus making Docker image reusable. 
-        "TRAINING_JOB_NAME": job_name
+        
+        # SageMaker auto-injects a TRAINING_JOB_NAME env var into every training container, set to the real, suffixed TrainingJobName.        
     }
 )
 

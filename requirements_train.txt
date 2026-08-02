@@ -6,5 +6,6 @@ matplotlib
 joblib
 scikit-learn
 mlflow
+sagemaker_mlflow
 dvc[s3]
 boto3

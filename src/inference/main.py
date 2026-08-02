@@ -28,3 +28,7 @@ async def invocations(request: Request):
     input_df = pd.DataFrame([body])
     result = predict(model, scaler, input_df)
     return JSONResponse(content = {"Prediction": result}, status_code = 200)
+
+    # Inference app/test disagree — main.py:30 returns {"Prediction": [...]}, but test_inference.py:40-43 asserts the response is a bare list. Test fails if enabled. 
+    # To solve this:
+    # return JSONResponse(content = result, status_code=200)

@@ -4,10 +4,13 @@ name: CD - Deploy approved model to the sagemaker
 
 on: 
   workflow_dispatch:
-    inputs: 
-      image_tag:  # 'image_tag' is one input. You can name any input
-        description: "Inference image tag to be deployed"
-        required: True
+    
+    #Inputs commented out, as not needed anymore. As the production model is obtained by querying directly to mlflow registry
+
+    # inputs: 
+    #   image_tag:  # 'image_tag' is one input. You can name any input
+    #     description: "Inference image tag to be deployed"
+    #     required: True
 
 jobs:
   
@@ -47,7 +50,7 @@ jobs:
         with: 
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID}}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+          aws-region: ${{ vars.AWS_DEFAULT_REGION }}
         
       - name: Login into AWS ECR 
         id: login-ecr 
@@ -71,7 +74,7 @@ jobs:
           # AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           # AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           # AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}          
-          S3_OUTPUT_BUCKET: ${{ vars.S3_OUTPUT_BUCKET}}  
+          SAGEMAKER_OUTPUT_PATH: ${{ vars.SAGEMAKER_OUTPUT_PATH }}
           SAGEMAKER_ROLE: ${{ vars.SAGEMAKER_ROLE_ARN }}  
           SAGEMAKER_ENDPOINT: ${{ vars.SAGEMAKER_ENDPOINT}}  
       
